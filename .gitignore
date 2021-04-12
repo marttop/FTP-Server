@@ -1,0 +1,4 @@
+*.o
+myftp
+vgcore*
+a.out
