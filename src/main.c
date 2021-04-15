@@ -10,6 +10,7 @@
 int main(int ac, char **av)
 {
     server_t server = {0};
+    signal(SIGINT, sigint_handler);
     init_server(&server);
     start_server(&server);
     return (EXIT_SUCCESS);

@@ -24,30 +24,34 @@ void init_server(server_t *serv)
 
 void server_loop(server_t *serv, struct sockaddr_in client)
 {
+    char *client_ip = NULL;
+    int client_port = 0;
     int n = read(serv->fdclient, serv->buf, 100);
-    serv->buf[n] = '\0';
     if (serv->fdclient >= 0) {
-        printf("msg: %s\n", serv->buf);
-        write(serv->fdclient, "Server response\n", 16);
+        client_ip = inet_ntoa(client.sin_addr);
+        client_port = ntohs(client.sin_port);
+        printf("Connection from %s:%d\n", client_ip, client_port);
     }
+    sleep(5);
+    serv->buf[n] = '\0';
+    printf("msg: %s\n", serv->buf);
+    write(serv->fdclient, "Server response\n", 16);
 }
 
 void start_server(server_t *serv)
 {
     struct sockaddr_in client = {0};
     serv->size = sizeof(client);
-    serv->fdclient = accept(serv->fdserv, (struct sockaddr *)&client, &serv->size);
-    char *client_ip = NULL;
-    int client_port = 0;
-    if (serv->fdclient >= 0) {
-        client_ip = inet_ntoa(client.sin_addr);
-        client_port = ntohs(client.sin_port);
-        printf("Connection from %s:%d\n", client_ip, client_port);
+    while (is_loop) {
+        serv->fdclient = accept(serv->fdserv, (struct sockaddr *)&client, &serv->size);
+        pid_t child = fork();
+        if (child == -1) handle_error("fork");
+        if (child == 0) {
+            bzero(serv->buf, 100);
+            server_loop(serv, client);
+        }
+        else close(serv->fdclient);
     }
-    while (1) {
-        bzero(serv->buf, 100);
-        server_loop(serv, client);
-    }
-    close(serv->fdclient);
     serv->fdclient = -1;
+    close(serv->fdserv);
 }

@@ -19,6 +19,8 @@
 #include <netinet/tcp.h>
 #include <arpa/inet.h>
 #include <strings.h>
+#include <stdbool.h>
+#include <signal.h>
 
 typedef struct server {
     int fdserv;
@@ -35,8 +37,11 @@ typedef struct client {
     char buf[100];
 } client_t;
 
+extern bool is_loop;
+
 void handle_error(const char *msg);
 void init_server(server_t *serv);
 void start_server(server_t *serv);
+void sigint_handler(int signal);
 
 #endif /* !MY_FTP_H_ */

@@ -7,8 +7,16 @@
 
 #include "my_ftp.h"
 
+bool is_loop = true;
+
 void handle_error(const char *msg)
 {
     perror(msg);
     exit(EXIT_FAILURE);
+}
+
+void sigint_handler(int signal)
+{
+    if (signal == SIGINT)
+        is_loop = false;
 }
