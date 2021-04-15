@@ -22,13 +22,32 @@ void init_server(server_t *serv)
         handle_error("listen");
 }
 
+void server_loop(server_t *serv, struct sockaddr_in client)
+{
+    int n = read(serv->fdclient, serv->buf, 100);
+    serv->buf[n] = '\0';
+    if (serv->fdclient >= 0) {
+        printf("msg: %s\n", serv->buf);
+        write(serv->fdclient, "Server response\n", 16);
+    }
+}
+
 void start_server(server_t *serv)
 {
-    struct sockaddr client = {0};
+    struct sockaddr_in client = {0};
     serv->size = sizeof(client);
-    serv->fdclient = accept(serv->fdserv, &client, &serv->size);
-    if (serv->fdclient > 0)
-        printf("Connection complete\n");
-    while (read(serv->fdclient, serv->buf, 100) > 0)
-        printf("%s\n", serv->buf);
+    serv->fdclient = accept(serv->fdserv, (struct sockaddr *)&client, &serv->size);
+    char *client_ip = NULL;
+    int client_port = 0;
+    if (serv->fdclient >= 0) {
+        client_ip = inet_ntoa(client.sin_addr);
+        client_port = ntohs(client.sin_port);
+        printf("Connection from %s:%d\n", client_ip, client_port);
+    }
+    while (1) {
+        bzero(serv->buf, 100);
+        server_loop(serv, client);
+    }
+    close(serv->fdclient);
+    serv->fdclient = -1;
 }

@@ -17,6 +17,8 @@
 #include <errno.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
+#include <arpa/inet.h>
+#include <strings.h>
 
 typedef struct server {
     int fdserv;
@@ -25,6 +27,13 @@ typedef struct server {
     socklen_t size;
     char buf[100];
 } server_t;
+
+typedef struct client {
+    int fdclient;
+    struct sockaddr_in client_addr;
+    socklen_t size;
+    char buf[100];
+} client_t;
 
 void handle_error(const char *msg);
 void init_server(server_t *serv);

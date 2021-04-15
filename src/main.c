@@ -7,7 +7,6 @@
 
 #include "my_ftp.h"
 
-//AF_INET      IPv4 Internet protocols
 int main(int ac, char **av)
 {
     server_t server = {0};
