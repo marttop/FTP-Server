@@ -21,14 +21,26 @@
 #include <strings.h>
 #include <stdbool.h>
 #include <signal.h>
+#include <sys/select.h>
 
 typedef struct server {
     int fdserv;
     int fdclient;
+    int max_sd;
+    int port;
+    char *path;
     struct sockaddr_in serv_addr;
+    struct sockaddr_in client;
+    fd_set set;
     socklen_t size;
+    struct fd *set_head;
     char buf[100];
 } server_t;
+
+typedef struct fd {
+    int fd;
+    struct fd *next;
+} fd_t;
 
 typedef struct client {
     int fdclient;
@@ -37,11 +49,12 @@ typedef struct client {
     char buf[100];
 } client_t;
 
-extern bool is_loop;
-
 void handle_error(const char *msg);
 void init_server(server_t *serv);
 void start_server(server_t *serv);
 void sigint_handler(int signal);
+void push_back(int fd, server_t *serv);
+void clear_list(server_t *serv);
+
 
 #endif /* !MY_FTP_H_ */

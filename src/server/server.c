@@ -7,51 +7,74 @@
 
 #include "my_ftp.h"
 
-void init_server(server_t *serv)
+void add_socket(server_t *serv)
 {
-    memset(&serv->serv_addr, 0, sizeof(serv->serv_addr));
-    serv->fdserv = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if (serv->fdserv == -1)
-        handle_error("server socket");
-    serv->serv_addr.sin_family = AF_INET;
-    serv->serv_addr.sin_port = htons(4242);
-    serv->serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    if (bind(serv->fdserv, (struct sockaddr*)(&serv->serv_addr), sizeof(serv->serv_addr)) == -1)
-        handle_error("bind");
-    if (listen(serv->fdserv, 3) == -1)
-        handle_error("listen");
+    fd_t *tmp = serv->set_head;
+    while (tmp != NULL) {
+        if (tmp->fd > 0)
+            FD_SET(tmp->fd, &serv->set);
+        if (tmp->fd > serv->max_sd)
+            serv->max_sd = tmp->fd;
+        tmp = tmp->next;
+    }
 }
 
-void server_loop(server_t *serv, struct sockaddr_in client)
+void connect_client(server_t *serv)
 {
-    char *client_ip = NULL;
-    int client_port = 0;
-    int n = read(serv->fdclient, serv->buf, 100);
-    if (serv->fdclient >= 0) {
-        client_ip = inet_ntoa(client.sin_addr);
-        client_port = ntohs(client.sin_port);
-        printf("Connection from %s:%d\n", client_ip, client_port);
+    if (FD_ISSET(serv->fdserv, &serv->set)) {
+        if ((serv->fdclient = accept(serv->fdserv,
+        (struct sockaddr *)&serv->client, &serv->size)) < 0)
+            handle_error("accept");
+        printf("New connection , socket fd is %d , ip is : %s , port : %d\n",
+            serv->fdclient,
+            inet_ntoa(serv->client.sin_addr),
+            ntohs(serv->client.sin_port));
+        puts("Welcome message sent successfully");
+        push_back(serv->fdclient, serv);
     }
-    sleep(5);
-    serv->buf[n] = '\0';
-    printf("msg: %s\n", serv->buf);
-    write(serv->fdclient, "Server response\n", 16);
+}
+
+void check_client_disconnection(server_t *serv)
+{
+    fd_t *tmp = serv->set_head;
+    int val = 0;
+    while (tmp != NULL) {
+        if (FD_ISSET(tmp->fd, &serv->set)) {
+            memset(serv->buf, '\0', sizeof(char) * 99);
+            if ((val = read(tmp->fd, serv->buf, 99)) == 0) {
+                getpeername(tmp->fd, (struct sockaddr *)&serv->client,
+                    (socklen_t *)&serv->size);
+                printf("Host disconnected , ip %s , port %d \n",
+                    inet_ntoa(serv->client.sin_addr),
+                    ntohs(serv->client.sin_port));
+                close(tmp->fd);
+                tmp->fd = 0;
+            } else {
+                printf("msg: %s\n", serv->buf);
+                write(tmp->fd, serv->buf, strlen(serv->buf));
+            }
+        }
+        tmp = tmp->next;
+    }
 }
 
 void start_server(server_t *serv)
 {
-    struct sockaddr_in client = {0};
-    serv->size = sizeof(client);
-    while (is_loop) {
-        serv->fdclient = accept(serv->fdserv, (struct sockaddr *)&client, &serv->size);
-        pid_t child = fork();
-        if (child == -1) handle_error("fork");
-        if (child == 0) {
-            bzero(serv->buf, 100);
-            server_loop(serv, client);
-        }
-        else close(serv->fdclient);
+    serv->size = sizeof(serv->client);
+    int act;
+    FD_ZERO(&serv->set);
+    while (1) {
+        FD_ZERO(&serv->set);
+        FD_SET(serv->fdserv, &serv->set);
+        serv->max_sd = serv->fdserv;
+        add_socket(serv);
+        act = select(serv->max_sd + 1, &serv->set, NULL, NULL, NULL);
+        if ((act < 0) && (errno != EINTR))
+            handle_error("select");
+
+        connect_client(serv);
+        check_client_disconnection(serv);
+        clear_list(serv);
     }
-    serv->fdclient = -1;
     close(serv->fdserv);
 }

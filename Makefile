@@ -10,6 +10,8 @@ NAME	=	myftp
 SRCS	=	src/main.c \
 			src/error.c \
 			src/server/server.c \
+			src/server/linked.c \
+			src/server/init.c \
 
 CALL_MAKE_CLIENT	=	cd src/client && make && mv client.out ../../
 
