@@ -39,9 +39,7 @@ int main(int ac, char **av)
     client.fdclient = socket(PF_INET, SOCK_STREAM, 0);
     if (connect(client.fdclient, (struct sockaddr *)&client.client_addr,
     sizeof(struct sockaddr_in)) != -1) {
-        char *mess = "Client!\n";
         bzero(client.buf, 100);
-        write(client.fdclient, mess, strlen(mess));
         client_loop(&client);
     } else
         handle_error("connect");

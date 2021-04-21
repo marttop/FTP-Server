@@ -17,9 +17,12 @@ void push_back(int fd, server_t *serv)
         while (tmp->next != NULL)
             tmp = tmp->next;
         tmp->next = new;
+        serv->current = new;
     }
-    else
+    else {
         serv->set_head = new;
+        serv->current = new;
+    }
 }
 
 void clear_list(server_t *serv)

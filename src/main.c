@@ -28,6 +28,7 @@ void parse_main(int ac, char **av, server_t *serv)
 int main(int ac, char **av)
 {
     server_t server = {0};
+    signal(SIGPIPE, SIG_IGN);
     parse_main(ac, av, &server);
     server.set_head = NULL;
     init_server(&server);

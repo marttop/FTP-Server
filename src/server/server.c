@@ -29,6 +29,7 @@ void connect_client(server_t *serv)
             serv->fdclient,
             inet_ntoa(serv->client.sin_addr),
             ntohs(serv->client.sin_port));
+        write(serv->fdclient, "220 Service ready for new user.\r\n", 34);
         puts("Welcome message sent successfully");
         push_back(serv->fdclient, serv);
     }
@@ -40,8 +41,8 @@ void check_client_disconnection(server_t *serv)
     int val = 0;
     while (tmp != NULL) {
         if (FD_ISSET(tmp->fd, &serv->set)) {
-            memset(serv->buf, '\0', sizeof(char) * 99);
-            if ((val = read(tmp->fd, serv->buf, 99)) == 0) {
+            memset(serv->buf, '\0', sizeof(char) * 100);
+            if ((val = read(tmp->fd, serv->buf, 100)) == 0) {
                 getpeername(tmp->fd, (struct sockaddr *)&serv->client,
                     (socklen_t *)&serv->size);
                 printf("Host disconnected , ip %s , port %d \n",
@@ -50,8 +51,8 @@ void check_client_disconnection(server_t *serv)
                 close(tmp->fd);
                 tmp->fd = 0;
             } else {
-                printf("msg: %s\n", serv->buf);
-                write(tmp->fd, serv->buf, strlen(serv->buf));
+                serv->current = tmp;
+                parse_command(serv);
             }
         }
         tmp = tmp->next;

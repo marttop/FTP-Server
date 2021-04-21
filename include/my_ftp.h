@@ -23,6 +23,8 @@
 #include <signal.h>
 #include <sys/select.h>
 
+#define CMD_END 2
+
 typedef struct server {
     int fdserv;
     int fdclient;
@@ -34,11 +36,14 @@ typedef struct server {
     fd_set set;
     socklen_t size;
     struct fd *set_head;
+    struct fd *current;
     char buf[100];
 } server_t;
 
 typedef struct fd {
     int fd;
+    bool logged;
+    bool username;
     struct fd *next;
 } fd_t;
 
@@ -49,12 +54,17 @@ typedef struct client {
     char buf[100];
 } client_t;
 
+//Ftp server functions
 void handle_error(const char *msg);
 void init_server(server_t *serv);
 void start_server(server_t *serv);
 void sigint_handler(int signal);
 void push_back(int fd, server_t *serv);
 void clear_list(server_t *serv);
+void parse_command(server_t *serv);
 
+//User commands
+void user_cmd(server_t *serv);
+void user_pass(server_t *serv);
 
 #endif /* !MY_FTP_H_ */

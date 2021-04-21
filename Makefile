@@ -12,6 +12,8 @@ SRCS	=	src/main.c \
 			src/server/server.c \
 			src/server/linked.c \
 			src/server/init.c \
+			src/server/cmd.c \
+			src/server/commands/auth.c \
 
 CALL_MAKE_CLIENT	=	cd src/client && make && mv client.out ../../
 
