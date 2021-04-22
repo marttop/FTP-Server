@@ -25,6 +25,6 @@ void parse_command(server_t *serv)
     if (itr != CMD_SIZE)
         func_cmd[itr](serv);
     else
-        write_response(serv->current->fd, "500 command unrecognized.");
+        write_response(serv->current->fd, "500 command unrecognized.\r\n");
     clear_cmd();
 }

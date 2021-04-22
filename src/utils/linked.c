@@ -18,19 +18,17 @@ void push_back(int fd, server_t *serv)
         while (tmp->next != NULL)
             tmp = tmp->next;
         tmp->next = new;
-        serv->current = new;
     }
-    else {
+    else
         serv->set_head = new;
-        serv->current = new;
-    }
+    serv->current = new;
 }
 
 void clear_list(server_t *serv)
 {
     fd_t *tmp = serv->set_head, *prev = NULL, *free_tmp = NULL;
     if (serv->set_head != NULL && serv->set_head->fd == 0) {
-        tmp = tmp->next, close(serv->set_head->fd);
+        tmp = tmp->next;
         free(serv->set_head);
         serv->set_head = tmp;
     }
@@ -39,10 +37,10 @@ void clear_list(server_t *serv)
         if (prev != NULL && tmp->fd == 0) {
             prev->next = tmp->next, free_tmp = tmp;
             tmp = tmp->next;
-            close(free_tmp->fd), free(free_tmp);
+            free(free_tmp);
             continue;
         } if (tmp->next == NULL && tmp->fd == 0) {
-            close(tmp->fd), serv->set_head = NULL, free(tmp);
+            serv->set_head = NULL, free(tmp);
             break;
         } tmp = tmp->next;
     }

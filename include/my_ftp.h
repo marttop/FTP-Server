@@ -24,6 +24,7 @@
 #include <sys/stat.h>
 #include <sys/select.h>
 #include <linux/limits.h>
+#include <poll.h>
 
 #define CMD_SIZE 8
 
@@ -47,13 +48,16 @@ typedef struct fd {
     bool username;
     int fd;
     struct fd *next;
+    char user[255];
     char work[PATH_MAX];
 } fd_t;
 
 typedef struct client {
     int fdclient;
     struct sockaddr_in client_addr;
+    struct pollfd set;
     socklen_t size;
+    int max_sd;
     char buf[100];
 } client_t;
 

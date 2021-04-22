@@ -7,20 +7,33 @@
 
 #include "my_ftp.h"
 
+int parse_code(client_t *client)
+{
+    char *token = strtok(client->buf, " \r\n");
+    if (token != NULL && strcmp(token, "221") == 0) return (1);
+    clear_cmd();
+    return (0);
+}
+
 void client_loop(client_t *client)
 {
-    int n = 0;
+    int ready, size_rec = 0;
     while (1) {
-        bzero(client->buf, 100);
-        int size_rec = read(client->fdclient, client->buf, 99 * sizeof(char));
-        client->buf[size_rec] = '\0';
-        if (size_rec) {
+        client->set.fd = client->fdclient;
+        ready = poll(&client->set, 1, 0);
+        memset(client->buf, '\0', 100 * sizeof(char));
+        if (ready > 0) {
+            size_rec = read(client->fdclient, client->buf, 99 * sizeof(char));
+            client->buf[size_rec] = '\0';
             printf("Caracteres recus : %d\n", size_rec);
             printf("Message : %s\n", client->buf);
+        } if (ready > 0 && parse_code(client)) break;
+        client->set.fd = 1, ready = poll(&client->set, 1, 0);
+        memset(client->buf, '\0', 100 * sizeof(char));
+        if (ready > 0) {
+            size_rec = read(1, client->buf, 99 * sizeof(char));
+            client->buf[size_rec] = '\0';
         }
-        bzero(client->buf, 100);
-        for (n = 0; (client->buf[n] = getchar()) != '\n'; n++);
-        client->buf[n] = '\0';
         write(client->fdclient, client->buf, strlen(client->buf));
     }
 }
@@ -32,6 +45,8 @@ int main(int ac, char **av)
         return (84);
     }
     client_t client = {0};
+    client.set.fd = 1;
+    client.set.events = POLLIN;
     client.size = sizeof(struct sockaddr_in);
     client.client_addr.sin_family = AF_INET;
     client.client_addr.sin_port = htons(atoi(av[2]));
@@ -39,7 +54,6 @@ int main(int ac, char **av)
     client.fdclient = socket(PF_INET, SOCK_STREAM, 0);
     if (connect(client.fdclient, (struct sockaddr *)&client.client_addr,
     sizeof(struct sockaddr_in)) != -1) {
-        bzero(client.buf, 100);
         client_loop(&client);
     } else
         handle_error("connect");

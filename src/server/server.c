@@ -29,7 +29,7 @@ void connect_client(server_t *serv)
             serv->fdclient,
             inet_ntoa(serv->client.sin_addr),
             ntohs(serv->client.sin_port));
-        write_response(serv->fdclient, "220 Service ready for new user.");
+        write_response(serv->fdclient, "220 Service ready for new user.\r\n");
         puts("Welcome message sent successfully");
         push_back(serv->fdclient, serv);
     }

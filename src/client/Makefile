@@ -9,6 +9,7 @@ NAME	=	client.out
 
 SRCS	=	client.c \
 			../utils/error.c \
+			../utils/utils.c \
 
 OBJS	=	$(SRCS:.c=.o)
 

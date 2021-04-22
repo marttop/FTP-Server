@@ -9,12 +9,18 @@
 
 void cmd_help(server_t *serv)
 {
-    write_response(serv->current->fd, "214 GOOGLE FTP HAHAHA.");
+    if (serv->current->logged)
+        write_response(serv->current->fd, "214 GOOGLE FTP HAHAHA.\r\n");
+    else
+        write_response(serv->current->fd, "530 Not logged in.\r\n");
 }
 
 void cmd_noop(server_t *serv)
 {
-    write_response(serv->current->fd, "200 Command okay.");
+    if (serv->current->logged)
+        write_response(serv->current->fd, "200 Command okay.\r\n");
+    else
+        write_response(serv->current->fd, "530 Not logged in.\r\n");
 }
 
 void cmd_pwd(server_t *serv)
@@ -24,7 +30,7 @@ void cmd_pwd(server_t *serv)
         write_response(serv->current->fd, serv->current->work);
     }
     else
-        write_response(serv->current->fd, "530 Not logged in.");
+        write_response(serv->current->fd, "530 Not logged in.\r\n");
 }
 
 void cmd_cwd(server_t *serv)
@@ -38,14 +44,14 @@ void cmd_cwd(server_t *serv)
             memset(serv->current->work, '\0', sizeof(char) * PATH_MAX);
             getcwd(serv->current->work, sizeof(serv->current->work));
             write_response(serv->current->fd,
-            "250 Requested file action okay, completed.");
+            "250 Requested file action okay, completed.\r\n");
         }
         else
-            write_response(serv->current->fd, "550 No such directory.");
+            write_response(serv->current->fd, "550 No such directory.\r\n");
         chdir(tmp);
     }
     else
-        write_response(serv->current->fd, "530 Not logged in.");
+        write_response(serv->current->fd, "530 Not logged in.\r\n");
 }
 
 void cmd_cdup(server_t *serv)
@@ -53,8 +59,8 @@ void cmd_cdup(server_t *serv)
     if (serv->current->logged) {
         memset(serv->current->work, '\0', PATH_MAX * sizeof(char));
         strcpy(serv->current->work, serv->work);
-        write_response(serv->current->fd, "200 Command okay.");
+        write_response(serv->current->fd, "200 Command okay.\r\n");
     }
     else
-        write_response(serv->current->fd, "530 Not logged in.");
+        write_response(serv->current->fd, "530 Not logged in.\r\n");
 }
