@@ -30,7 +30,7 @@ void clear_list(server_t *serv)
 {
     fd_t *tmp = serv->set_head, *prev = NULL, *free_tmp = NULL;
     if (serv->set_head != NULL && serv->set_head->fd == 0) {
-        tmp = tmp->next;
+        tmp = tmp->next, close(serv->set_head->fd);
         free(serv->set_head);
         serv->set_head = tmp;
     }
@@ -39,10 +39,10 @@ void clear_list(server_t *serv)
         if (prev != NULL && tmp->fd == 0) {
             prev->next = tmp->next, free_tmp = tmp;
             tmp = tmp->next;
-            free(free_tmp);
+            close(free_tmp->fd), free(free_tmp);
             continue;
         } if (tmp->next == NULL && tmp->fd == 0) {
-            serv->set_head = NULL, free(tmp);
+            close(tmp->fd), serv->set_head = NULL, free(tmp);
             break;
         } tmp = tmp->next;
     }

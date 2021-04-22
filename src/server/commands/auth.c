@@ -47,6 +47,7 @@ void cmd_quit(server_t *serv)
         serv->current->logged = false;
         write_response(serv->current->fd,
         "221 Service closing control connection.");
+        serv->current->fd = 0;
     }
     else
         write_response(serv->current->fd, "530 Not logged in.");

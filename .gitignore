@@ -4,3 +4,4 @@ vgcore*
 a.out
 client.out
 test.c
+test_ftp.sh
