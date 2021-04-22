@@ -7,7 +7,7 @@
 
 #include "my_ftp.h"
 
-void user_cmd(server_t *serv)
+void cmd_user(server_t *serv)
 {
     char *token = strtok(NULL, " \r\n");
     if (serv->current->logged) {
@@ -22,7 +22,7 @@ void user_cmd(server_t *serv)
         write(serv->current->fd, "430 Invalid username or password.\r\n", 35);
 }
 
-void user_pass(server_t *serv)
+void cmd_pass(server_t *serv)
 {
     char *token = strtok(NULL, " \r\n");
     if (serv->current->logged) {
@@ -38,4 +38,16 @@ void user_pass(server_t *serv)
     }
     else
         write(serv->current->fd, "430 Invalid username or password.\r\n", 35);
+}
+
+void cmd_quit(server_t *serv)
+{
+    if (serv->current->logged) {
+        serv->current->username = false;
+        serv->current->logged = false;
+        write(serv->current->fd,
+        "221 Service closing control connection.\r\n", 41);
+    }
+    else
+        write(serv->current->fd, "530 Not logged in.\r\n", 20);
 }

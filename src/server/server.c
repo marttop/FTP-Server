@@ -41,8 +41,8 @@ void check_client_disconnection(server_t *serv)
     int val = 0;
     while (tmp != NULL) {
         if (FD_ISSET(tmp->fd, &serv->set)) {
-            memset(serv->buf, '\0', sizeof(char) * 100);
-            if ((val = read(tmp->fd, serv->buf, 100)) == 0) {
+            memset(serv->buf, '\0', sizeof(char) * 99);
+            if ((val = read(tmp->fd, serv->buf, 99)) == 0) {
                 getpeername(tmp->fd, (struct sockaddr *)&serv->client,
                     (socklen_t *)&serv->size);
                 printf("Host disconnected , ip %s , port %d \n",

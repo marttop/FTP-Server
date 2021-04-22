@@ -21,8 +21,13 @@ void parse_main(int ac, char **av, server_t *serv)
 {
     if (ac < 3)
         display_usage();
+    struct stat st = {0};
     serv->port = atoi(av[1]);
     serv->path = av[2];
+    memset(serv->work, '\0', 255 * sizeof(char));
+    strcpy(serv->work, av[2]);
+    if (stat(serv->path, &st) == -1)
+        mkdir(serv->path, 0700);
 }
 
 int main(int ac, char **av)

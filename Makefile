@@ -8,12 +8,14 @@
 NAME	=	myftp
 
 SRCS	=	src/main.c \
-			src/error.c \
+			src/utils/error.c \
 			src/server/server.c \
 			src/server/linked.c \
 			src/server/init.c \
-			src/server/cmd.c \
+			src/server/commands/cmd.c \
 			src/server/commands/auth.c \
+			src/server/commands/misc.c \
+
 
 CALL_MAKE_CLIENT	=	cd src/client && make && mv client.out ../../
 
