@@ -26,8 +26,12 @@ void cmd_noop(server_t *serv)
 void cmd_pwd(server_t *serv)
 {
     if (serv->current->logged) {
-        write(serv->current->fd, "257 ", 4);
-        write_response(serv->current->fd, serv->current->work);
+        char tmp[PATH_MAX];
+        memset(tmp, '\0', PATH_MAX * sizeof(char));
+        strcat(tmp, "257 ");
+        strcpy(tmp, serv->current->work);
+        strcat(tmp, "\r\n");
+        write_response(serv->current->fd, tmp);
     }
     else
         write_response(serv->current->fd, "530 Not logged in.\r\n");
@@ -35,8 +39,8 @@ void cmd_pwd(server_t *serv)
 
 void cmd_cwd(server_t *serv)
 {
-    char *token = strtok(NULL, " \r\n");
-    if (serv->current->logged && token != NULL) {
+    char *token = strtok(NULL, " \r\n"), *safe = strtok(NULL, " \r\n");
+    if (serv->current->logged && token != NULL && safe == NULL) {
         char tmp[PATH_MAX];
         getcwd(tmp, sizeof(tmp));
         chdir(serv->current->work);
@@ -50,8 +54,7 @@ void cmd_cwd(server_t *serv)
             write_response(serv->current->fd, "550 No such directory.\r\n");
         chdir(tmp);
     }
-    else
-        write_response(serv->current->fd, "530 Not logged in.\r\n");
+    else write_response(serv->current->fd, "530 Not logged in.\r\n");
 }
 
 void cmd_cdup(server_t *serv)
