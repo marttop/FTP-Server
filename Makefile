@@ -9,8 +9,9 @@ NAME	=	myftp
 
 SRCS	=	src/main.c \
 			src/utils/error.c \
+			src/utils/linked.c \
+			src/utils/utils.c \
 			src/server/server.c \
-			src/server/linked.c \
 			src/server/init.c \
 			src/server/commands/cmd.c \
 			src/server/commands/auth.c \

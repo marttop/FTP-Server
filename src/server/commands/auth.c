@@ -11,33 +11,33 @@ void cmd_user(server_t *serv)
 {
     char *token = strtok(NULL, " \r\n");
     if (serv->current->logged) {
-        write(serv->current->fd, "230 User logged in, proceed.\r\n", 30);
+        write_response(serv->current->fd, "230 User logged in, proceed.");
         return;
     }
     if (token != NULL && strcmp(token, "Anonymous") == 0) {
         serv->current->username = true;
-        write(serv->current->fd, "331 User name okay, need password.\r\n", 36);
+        write_response(serv->current->fd, "331 User name okay, need password.");
     }
     else
-        write(serv->current->fd, "430 Invalid username or password.\r\n", 35);
+        write_response(serv->current->fd, "430 Invalid username or password.");
 }
 
 void cmd_pass(server_t *serv)
 {
     char *token = strtok(NULL, " \r\n");
     if (serv->current->logged) {
-        write(serv->current->fd, "230 User logged in, proceed.\r\n", 30);
+        write_response(serv->current->fd, "230 User logged in, proceed.");
         return;
     }
     if (!serv->current->username)
-        write(serv->current->fd, "332 Need account for login.\r\n", 29);
+        write_response(serv->current->fd, "332 Need account for login.");
     else if ((token == NULL || strcmp(token, "") == 0)
     && serv->current->username) {
         serv->current->logged = true;
-        write(serv->current->fd, "230 User logged in, proceed.\r\n", 30);
+        write_response(serv->current->fd, "230 User logged in, proceed.");
     }
     else
-        write(serv->current->fd, "430 Invalid username or password.\r\n", 35);
+        write_response(serv->current->fd, "430 Invalid username or password.");
 }
 
 void cmd_quit(server_t *serv)
@@ -45,9 +45,9 @@ void cmd_quit(server_t *serv)
     if (serv->current->logged) {
         serv->current->username = false;
         serv->current->logged = false;
-        write(serv->current->fd,
-        "221 Service closing control connection.\r\n", 41);
+        write_response(serv->current->fd,
+        "221 Service closing control connection.");
     }
     else
-        write(serv->current->fd, "530 Not logged in.\r\n", 20);
+        write_response(serv->current->fd, "530 Not logged in.");
 }

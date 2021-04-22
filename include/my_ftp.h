@@ -58,13 +58,9 @@ typedef struct client {
 } client_t;
 
 //Ftp server functions
-void handle_error(const char *msg);
 void init_server(server_t *serv);
 void start_server(server_t *serv);
 void sigint_handler(int signal);
-void push_back(int fd, server_t *serv);
-void clear_list(server_t *serv);
-void clear_cmd();
 void parse_command(server_t *serv);
 
 //User commands
@@ -76,5 +72,12 @@ void cmd_noop(server_t *serv);
 void cmd_pwd(server_t *serv);
 void cmd_cwd(server_t *serv);
 void cmd_cdup(server_t *serv);
+
+//Utils
+void push_back(int fd, server_t *serv);
+void clear_list(server_t *serv);
+void handle_error(const char *msg);
+void clear_cmd(void);
+void write_response(int fd, const char *msg);
 
 #endif /* !MY_FTP_H_ */

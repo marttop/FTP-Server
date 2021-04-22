@@ -12,9 +12,3 @@ void handle_error(const char *msg)
     perror(msg);
     exit(EXIT_FAILURE);
 }
-
-void clear_cmd()
-{
-    char *token = strtok(NULL, " \r\n");
-    while (token != NULL) token = strtok(NULL, " \r\n");
-}
