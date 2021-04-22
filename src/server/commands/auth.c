@@ -11,7 +11,7 @@ void cmd_user(server_t *serv)
 {
     char *token = strtok(NULL, " \r\n");
     if (serv->current->logged) {
-        write(serv->fdclient, "230 User logged in, proceed.\r\n", 30);
+        write(serv->current->fd, "230 User logged in, proceed.\r\n", 30);
         return;
     }
     if (token != NULL && strcmp(token, "Anonymous") == 0) {
@@ -26,15 +26,15 @@ void cmd_pass(server_t *serv)
 {
     char *token = strtok(NULL, " \r\n");
     if (serv->current->logged) {
-        write(serv->fdclient, "230 User logged in, proceed.\r\n", 30);
+        write(serv->current->fd, "230 User logged in, proceed.\r\n", 30);
         return;
     }
     if (!serv->current->username)
-        write(serv->fdclient, "332 Need account for login.\r\n", 29);
+        write(serv->current->fd, "332 Need account for login.\r\n", 29);
     else if ((token == NULL || strcmp(token, "") == 0)
     && serv->current->username) {
         serv->current->logged = true;
-        write(serv->fdclient, "230 User logged in, proceed.\r\n", 30);
+        write(serv->current->fd, "230 User logged in, proceed.\r\n", 30);
     }
     else
         write(serv->current->fd, "430 Invalid username or password.\r\n", 35);

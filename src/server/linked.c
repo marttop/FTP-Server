@@ -13,6 +13,7 @@ void push_back(int fd, server_t *serv)
     fd_t *new = malloc(sizeof(fd_t));
     new->fd = fd;
     new->next = NULL;
+    strcpy(new->work, serv->work);
     if (tmp != NULL) {
         while (tmp->next != NULL)
             tmp = tmp->next;

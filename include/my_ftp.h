@@ -23,8 +23,9 @@
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/select.h>
+#include <linux/limits.h>
 
-#define CMD_SIZE 5
+#define CMD_SIZE 8
 
 typedef struct server {
     int fdserv;
@@ -35,18 +36,18 @@ typedef struct server {
     struct sockaddr_in client;
     fd_set set;
     socklen_t size;
-    char *path;
     struct fd *set_head;
     struct fd *current;
-    char work[255];
+    char work[PATH_MAX];
     char buf[100];
 } server_t;
 
 typedef struct fd {
-    int fd;
     bool logged;
     bool username;
+    int fd;
     struct fd *next;
+    char work[PATH_MAX];
 } fd_t;
 
 typedef struct client {
@@ -63,6 +64,7 @@ void start_server(server_t *serv);
 void sigint_handler(int signal);
 void push_back(int fd, server_t *serv);
 void clear_list(server_t *serv);
+void clear_cmd();
 void parse_command(server_t *serv);
 
 //User commands
@@ -71,4 +73,8 @@ void cmd_pass(server_t *serv);
 void cmd_quit(server_t *serv);
 void cmd_help(server_t *serv);
 void cmd_noop(server_t *serv);
+void cmd_pwd(server_t *serv);
+void cmd_cwd(server_t *serv);
+void cmd_cdup(server_t *serv);
+
 #endif /* !MY_FTP_H_ */

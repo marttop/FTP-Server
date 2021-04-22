@@ -8,10 +8,12 @@
 #include "my_ftp.h"
 
 static const char *const cmd[CMD_SIZE] =
-            {"USER", "PASS", "QUIT", "NOOP", "HELP"};
+            {"USER", "PASS", "QUIT", "NOOP",
+            "HELP", "PWD", "CWD", "CDUP"};
 
 void (*func_cmd[CMD_SIZE])(server_t *) =
-            {cmd_user, cmd_pass, cmd_quit, cmd_noop, cmd_help};
+            {cmd_user, cmd_pass, cmd_quit, cmd_noop,
+            cmd_help, cmd_pwd, cmd_cwd, cmd_cdup};
 
 void parse_command(server_t *serv)
 {
@@ -24,4 +26,5 @@ void parse_command(server_t *serv)
         func_cmd[itr](serv);
     else
         write(serv->current->fd, "500 command unrecognized.\r\n", 27);
+    clear_cmd();
 }
