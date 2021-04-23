@@ -25,3 +25,11 @@ void write_data_pasv(server_t *serv, FILE *fp)
         write(serv->current->client, serv->buf, strlen(serv->buf));
     }
 }
+
+void close_data_socket(server_t *serv)
+{
+    serv->current->pasv = false;
+    serv->current->port = false;
+    close(serv->current->data_master);
+    close(serv->current->client);
+}

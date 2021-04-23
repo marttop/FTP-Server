@@ -16,16 +16,14 @@ int list_current_dir(server_t *serv, const char *arg)
     if (arg != NULL) {
         strcpy(str, "ls -l "), strcat(str, arg);
         fp = popen(str, "r");
-    }
-    else fp = popen("ls -l", "r");
+    } else fp = popen("ls -l", "r");
     chdir(tmp);
-    pid_t child = fork();
-    if (child == 0) {
+    serv->current->child = fork();
+    if (serv->current->child == 0) {
         write_data_pasv(serv, fp);
         write_response(serv->current->fd, "226 Closing data connection.\r\n");
-        exit(0);
-    }
-    else
+        exit(1);
+    } else
         write_response(serv->current->fd, "150 File status okay.\r\n");
     return (0);
 }

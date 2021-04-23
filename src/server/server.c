@@ -39,7 +39,10 @@ void check_client_disconnection(server_t *serv)
 {
     fd_t *tmp = serv->set_head;
     int val = 0;
+    pid_t wait;
     while (tmp != NULL) {
+        if ((wait = waitpid(tmp->child, 0, WNOHANG)) > 0)
+            close_data_socket(serv);
         if (FD_ISSET(tmp->fd, &serv->set)) {
             memset(serv->buf, '\0', sizeof(char) * 99);
             if ((val = read(tmp->fd, serv->buf, 99)) == 0) {
@@ -74,8 +77,8 @@ void start_server(server_t *serv)
             handle_error("select");
 
         connect_client(serv);
-        check_client_disconnection(serv);
         clear_list(serv);
+        check_client_disconnection(serv);
     }
     close(serv->fdserv);
 }

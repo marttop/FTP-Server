@@ -13,8 +13,10 @@
 #include <string.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
+#include <sys/wait.h>
 #include <arpa/inet.h>
 #include <strings.h>
 #include <stdbool.h>
@@ -54,6 +56,7 @@ typedef struct fd {
     int client;
     struct fd *next;
     struct sockaddr_in s;
+    pid_t child;
     char user[255];
     char work[PATH_MAX];
 } fd_t;
@@ -95,5 +98,6 @@ void handle_error(const char *msg);
 void clear_cmd(void);
 void write_response(int fd, const char *msg);
 void write_data_pasv(server_t *serv, FILE *fp);
+void close_data_socket(server_t *serv);
 
 #endif /* !MY_FTP_H_ */
