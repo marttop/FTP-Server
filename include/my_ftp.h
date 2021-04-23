@@ -24,9 +24,10 @@
 #include <sys/stat.h>
 #include <sys/select.h>
 #include <linux/limits.h>
+#include <limits.h>
 #include <poll.h>
 
-#define CMD_SIZE 8
+#define CMD_SIZE 9
 
 typedef struct server {
     int fdserv;
@@ -46,15 +47,22 @@ typedef struct server {
 typedef struct fd {
     bool logged;
     bool username;
+    bool pasv;
+    bool port;
     int fd;
+    int data_master;
+    int client;
     struct fd *next;
+    struct sockaddr_in s;
     char user[255];
     char work[PATH_MAX];
 } fd_t;
 
 typedef struct client {
     int fdclient;
+    int data;
     struct sockaddr_in client_addr;
+    struct sockaddr_in d_t;
     struct pollfd set;
     socklen_t size;
     int max_sd;
@@ -76,6 +84,7 @@ void cmd_noop(server_t *serv);
 void cmd_pwd(server_t *serv);
 void cmd_cwd(server_t *serv);
 void cmd_cdup(server_t *serv);
+void cmd_pasv(server_t *serv);
 
 //Utils
 void push_back(int fd, server_t *serv);

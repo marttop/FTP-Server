@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "cstdio": "cpp"
+        "cstdio": "cpp",
+        "stdio.h": "c",
+        "limits": "cpp"
     }
 }

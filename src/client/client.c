@@ -7,10 +7,27 @@
 
 #include "my_ftp.h"
 
+void enable_pasv(client_t *client)
+{
+    for (int i = 0; i < 7; i++)
+        strtok(NULL, " \r\n(),");
+    client->d_t.sin_family = AF_INET;
+    int a = atoi(strtok(NULL, " \r\n(),"));
+    int b = atoi(strtok(NULL, " \r\n(),"));
+    client->d_t.sin_port = htons(a * 256 + b);
+    inet_aton("127.0.0.1", &client->d_t.sin_addr);
+    client->data = socket(PF_INET, SOCK_STREAM, 0);
+    if (connect(client->data, (struct sockaddr *)&client->d_t,
+    sizeof(struct sockaddr_in)) == -1) {
+        handle_error("connect");
+    }
+}
+
 int parse_code(client_t *client)
 {
-    char *token = strtok(client->buf, " \r\n");
+    char *token = strtok(client->buf, " \r\n(),");
     if (token != NULL && strcmp(token, "221") == 0) return (1);
+    if (token != NULL && strcmp(token, "227") == 0) enable_pasv(client);
     clear_cmd();
     return (0);
 }
