@@ -17,13 +17,14 @@ void write_data(server_t *serv, FILE *fp)
 int list_current_dir(server_t *serv, const char *arg)
 {
     FILE *fp;
-    char tmp[PATH_MAX];
+    char tmp[PATH_MAX], str[256];
     getcwd(tmp, sizeof(tmp));
     chdir(serv->current->work);
-    if (arg != NULL)
-        fp = popen("ls -l", "r");
-    else
-        fp = popen("ls -l", "r");
+    if (arg != NULL) {
+        strcpy(str, "ls -l "), strcat(str, arg);
+        fp = popen(str, "r");
+    }
+    else fp = popen("ls -l", "r");
     chdir(tmp);
     pid_t child = fork();
     if (child == 0) {
@@ -41,7 +42,10 @@ void cmd_list(server_t *serv)
     if (serv->current->logged &&
     (serv->current->pasv || serv->current->port)) {
         char *token = strtok(NULL, " \r\n");
-        list_current_dir(serv, NULL);
+        if (token == NULL)
+            list_current_dir(serv, NULL);
+        else
+            list_current_dir(serv, token);
     }
     else write_response(serv->current->fd, "530 Not logged in.\r\n");
 }
