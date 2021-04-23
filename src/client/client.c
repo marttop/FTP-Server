@@ -32,6 +32,22 @@ int parse_code(client_t *client)
     return (0);
 }
 
+void data_transfert(client_t *client)
+{
+    int ready, size_rec = 0;
+    if (client->data != 0) {
+        client->set.fd = client->data;
+        ready = poll(&client->set, 1, 0);
+        memset(client->buf, '\0', 100 * sizeof(char));
+        if (ready > 0) {
+            size_rec = read(client->data, client->buf, 99 * sizeof(char));
+            client->buf[size_rec] = '\0';
+            printf("Caracteres recus : %d\n", size_rec);
+            printf("Data : %s\n", client->buf);
+        }
+    }
+}
+
 void client_loop(client_t *client)
 {
     int ready, size_rec = 0;
@@ -45,6 +61,7 @@ void client_loop(client_t *client)
             printf("Caracteres recus : %d\n", size_rec);
             printf("Message : %s\n", client->buf);
         } if (ready > 0 && parse_code(client)) break;
+        data_transfert(client);
         client->set.fd = 1, ready = poll(&client->set, 1, 0);
         memset(client->buf, '\0', 100 * sizeof(char));
         if (ready > 0) {

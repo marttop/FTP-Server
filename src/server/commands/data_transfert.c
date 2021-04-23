@@ -12,13 +12,14 @@ int get_free_port(server_t *serv)
     int i = 1024;
     for (; i < SHRT_MAX; i++) {
         serv->current->s.sin_port = htons(i);
-        if (bind(serv->current->data_master, (struct sockaddr *)(&serv->current->s),
+        if (bind(serv->current->data_master,
+        (struct sockaddr *)(&serv->current->s),
         sizeof(serv->current->s)) != -1)
             break;
     }
     if (i == SHRT_MAX)
         return (-1);
-    return(i);
+    return (i);
 }
 
 void pasv_response(server_t *serv, int port)
@@ -36,7 +37,7 @@ void pasv_response(server_t *serv, int port)
 
 void cmd_pasv(server_t *serv)
 {
-    if (serv->current->logged) {
+    if (serv->current->logged && !serv->current->pasv) {
         int port = 0;
         memset(&serv->current->s, 0, sizeof(serv->current->s));
         serv->current->data_master = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -47,6 +48,7 @@ void cmd_pasv(server_t *serv)
             pasv_response(serv, port);
             serv->current->client = accept(serv->current->data_master,
             (struct sockaddr *)&serv->current->s, &serv->size);
+            serv->current->pasv = true;
         }
         else {
             write_response(serv->current->fd,

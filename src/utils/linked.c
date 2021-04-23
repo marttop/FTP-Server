@@ -7,12 +7,21 @@
 
 #include "my_ftp.h"
 
+void init_node(fd_t *node)
+{
+    memset(node, 0, sizeof(fd_t));
+    node->next = NULL;
+    node->logged = false;
+    node->pasv = false;
+    node->port = false;
+}
+
 void push_back(int fd, server_t *serv)
 {
     fd_t *tmp = serv->set_head;
     fd_t *new = malloc(sizeof(fd_t));
+    init_node(new);
     new->fd = fd;
-    new->next = NULL;
     strcpy(new->work, serv->work);
     if (tmp != NULL) {
         while (tmp->next != NULL)
