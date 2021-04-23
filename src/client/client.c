@@ -56,7 +56,7 @@ void client_loop(client_t *client)
         memset(client->buf, '\0', 100 * sizeof(char));
         if (ready > 0) {
             size_rec = read(client->fdclient, client->buf, 99 * sizeof(char));
-            client->buf[size_rec] = '\0';
+            client->buf[size_rec] = '\0', printf("\n");
             printf("Caracteres recus : %d\n", size_rec);
             printf("Message : %s\n", client->buf);
         } if (ready > 0 && parse_code(client)) break;
