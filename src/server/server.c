@@ -41,9 +41,9 @@ void check_client_disconnection(server_t *serv)
     int val = 0;
     pid_t wait;
     while (tmp != NULL) {
-        if ((wait = waitpid(tmp->child, 0, WNOHANG)) > 0)
-            close_data_socket(serv);
         if (FD_ISSET(tmp->fd, &serv->set)) {
+            if ((wait = waitpid(tmp->child, 0, WNOHANG)) > 0)
+                close_data_socket(serv);
             memset(serv->buf, '\0', sizeof(char) * 99);
             if ((val = read(tmp->fd, serv->buf, 99)) == 0) {
                 getpeername(tmp->fd, (struct sockaddr *)&serv->client,

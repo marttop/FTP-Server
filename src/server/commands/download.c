@@ -10,10 +10,10 @@
 int copy_file(server_t *serv, const char *arg)
 {
     FILE *fp;
-    char tmp[PATH_MAX], str[PATH_MAX];
+    char tmp[PATH_MAX];
     getcwd(tmp, sizeof(tmp));
     chdir(serv->current->work);
-    if (fp = fopen(arg, O_RDONLY) != -1) {
+    if ((fp = fopen(arg, O_RDONLY)) != NULL) {
         pid_t child = fork();
         if (child == 0) {
             write_data_pasv(serv, fp);
