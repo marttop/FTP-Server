@@ -100,5 +100,6 @@ void clear_cmd(void);
 void write_response(int fd, const char *msg);
 void write_data_pasv(server_t *serv, FILE *fp);
 void close_data_socket(server_t *serv);
+char *get_file_name(const char *filepath);
 
 #endif /* !MY_FTP_H_ */

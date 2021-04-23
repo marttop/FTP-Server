@@ -35,25 +35,32 @@ void connect_client(server_t *serv)
     }
 }
 
+void check_node(server_t *serv, fd_t *tmp)
+{
+    int val = 0;
+    memset(serv->buf, '\0', sizeof(char) * 99);
+    if ((val = read(tmp->fd, serv->buf, 99)) == 0) {
+        getpeername(tmp->fd, (struct sockaddr *)&serv->client,
+                (socklen_t *)&serv->size);
+        printf("Host disconnected , ip %s , port %d \n",
+                inet_ntoa(serv->client.sin_addr),
+                ntohs(serv->client.sin_port));
+        close(tmp->fd), tmp->fd = 0;
+    }
+    else
+        parse_command(serv);
+}
+
 void check_client_disconnection(server_t *serv)
 {
     fd_t *tmp = serv->set_head;
-    int val = 0;
     pid_t wait;
     while (tmp != NULL) {
         if (FD_ISSET(tmp->fd, &serv->set)) {
+            serv->current = tmp;
             if ((wait = waitpid(tmp->child, 0, WNOHANG)) > 0)
                 close_data_socket(serv);
-            memset(serv->buf, '\0', sizeof(char) * 99);
-            if ((val = read(tmp->fd, serv->buf, 99)) == 0) {
-                getpeername(tmp->fd, (struct sockaddr *)&serv->client,
-                    (socklen_t *)&serv->size);
-                printf("Host disconnected , ip %s , port %d \n",
-                    inet_ntoa(serv->client.sin_addr),
-                    ntohs(serv->client.sin_port));
-                close(tmp->fd), tmp->fd = 0;
-            } else
-                serv->current = tmp, parse_command(serv);
+            check_node(serv, tmp);
         }
         tmp = tmp->next;
     }

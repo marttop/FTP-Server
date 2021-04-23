@@ -13,33 +13,36 @@ int copy_file(server_t *serv, const char *arg)
     char tmp[PATH_MAX];
     getcwd(tmp, sizeof(tmp));
     chdir(serv->current->work);
-    if ((fp = fopen(arg, O_RDONLY)) != NULL) {
+    if ((fp = fopen(arg, "r")) != NULL) {
         serv->current->child = fork();
         if (serv->current->child == 0) {
             write_data_pasv(serv, fp);
             write_response(serv->current->fd,
             "226 Closing data connection.\r\n");
-            exit(0);
-        }
-        else
+            exit(1);
+        } else
             write_response(serv->current->fd, "150 File status okay.\r\n");
     } else {
         chdir(tmp);
         return (-1);
     }
-    chdir(tmp);
+    fclose(fp), chdir(tmp);
     return (0);
 }
 
 void cmd_retr(server_t *serv)
 {
     char *token = strtok(NULL, " \r\n");
-    if (serv->current->logged) {
+    if (serv->current->logged &&
+    (serv->current->pasv || serv->current->port)) {
         if (token != NULL && copy_file(serv, token) != -1)
-            copy_file(serv, token);
+            return;
         else
             write_response(serv->current->fd, "550 No sutch file.\r\n");
     }
+    else if (serv->current->logged &&
+    !serv->current->pasv && !serv->current->port)
+        write_response(serv->current->fd, "425 Enable PASV or PORT.\r\n");
     else
         write_response(serv->current->fd, "530 Not logged in.\r\n");
 }

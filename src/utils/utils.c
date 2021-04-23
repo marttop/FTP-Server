@@ -33,3 +33,20 @@ void close_data_socket(server_t *serv)
     close(serv->current->data_master);
     close(serv->current->client);
 }
+
+char *get_file_name(const char *filepath)
+{
+    int len = strlen(filepath);
+    char *str = malloc(len + 1);
+    int pos, i;
+    for (pos = len - 1; pos > 0; pos--)
+        if (filepath[pos] == '/') {
+            pos++;
+            break;
+        }
+    for (i = 0; pos < len; i++, pos++) {
+        str[i] = filepath[pos];
+    }
+    str[i] = '\0';
+    return (str);
+}

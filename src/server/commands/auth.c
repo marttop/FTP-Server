@@ -57,4 +57,5 @@ void cmd_quit(server_t *serv)
     "221 Service closing control connection.\r\n");
     close(serv->current->fd);
     serv->current->fd = 0;
+    close_data_socket(serv);
 }

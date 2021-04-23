@@ -10,10 +10,12 @@
 int file_exist(const char *file, server_t *serv)
 {
     char tmp[PATH_MAX];
+    int fd;
     getcwd(tmp, sizeof(tmp));
     chdir(serv->current->work);
-    if (open(file, O_RDONLY) != -1) {
+    if ((fd = open(file, O_RDONLY)) != -1) {
         chdir(tmp);
+        close(fd);
         return (1);
     }
     chdir(tmp);
@@ -54,5 +56,8 @@ void cmd_list(server_t *serv)
         }
         else write_response(serv->current->fd, "550 No file.\r\n");
     }
+    else if (serv->current->logged &&
+    !serv->current->pasv && !serv->current->port)
+        write_response(serv->current->fd, "425 Enable PASV or PORT.\r\n");
     else write_response(serv->current->fd, "530 Not logged in.\r\n");
 }
