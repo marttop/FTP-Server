@@ -41,8 +41,7 @@ void cmd_list(server_t *serv)
     if (serv->current->logged &&
     (serv->current->pasv || serv->current->port)) {
         char *token = strtok(NULL, " \r\n");
-        if (token == NULL)
-            list_current_dir(serv, NULL);
+        list_current_dir(serv, NULL);
     }
     else write_response(serv->current->fd, "530 Not logged in.\r\n");
 }
