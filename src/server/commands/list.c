@@ -7,13 +7,6 @@
 
 #include "my_ftp.h"
 
-void write_data(server_t *serv, FILE *fp)
-{
-    while (fgets(serv->buf, 100, fp) != NULL) {
-        write(serv->current->client, serv->buf, strlen(serv->buf));
-    }
-}
-
 int list_current_dir(server_t *serv, const char *arg)
 {
     FILE *fp;
@@ -28,7 +21,7 @@ int list_current_dir(server_t *serv, const char *arg)
     chdir(tmp);
     pid_t child = fork();
     if (child == 0) {
-        write_data(serv, fp);
+        write_data_pasv(serv, fp);
         write_response(serv->current->fd, "226 Closing data connection.\r\n");
         exit(0);
     }

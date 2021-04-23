@@ -94,5 +94,6 @@ void clear_list(server_t *serv);
 void handle_error(const char *msg);
 void clear_cmd(void);
 void write_response(int fd, const char *msg);
+void write_data_pasv(server_t *serv, FILE *fp);
 
 #endif /* !MY_FTP_H_ */

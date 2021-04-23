@@ -18,3 +18,10 @@ void clear_cmd(void)
     char *token = strtok(NULL, " \r\n");
     while (token != NULL) token = strtok(NULL, " \r\n");
 }
+
+void write_data_pasv(server_t *serv, FILE *fp)
+{
+    while (fgets(serv->buf, 100, fp) != NULL) {
+        write(serv->current->client, serv->buf, strlen(serv->buf));
+    }
+}
