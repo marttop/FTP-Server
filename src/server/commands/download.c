@@ -14,16 +14,16 @@ int copy_file(server_t *serv, const char *arg)
     getcwd(tmp, sizeof(tmp));
     chdir(serv->current->work);
     if ((fp = fopen(arg, O_RDONLY)) != NULL) {
-        pid_t child = fork();
-        if (child == 0) {
+        serv->current->child = fork();
+        if (serv->current->child == 0) {
             write_data_pasv(serv, fp);
-            write_response(serv->current->fd, "226 Closing data connection.\r\n");
+            write_response(serv->current->fd,
+            "226 Closing data connection.\r\n");
             exit(0);
         }
         else
             write_response(serv->current->fd, "150 File status okay.\r\n");
-    }
-    else {
+    } else {
         chdir(tmp);
         return (-1);
     }
@@ -38,7 +38,7 @@ void cmd_retr(server_t *serv)
         if (token != NULL && copy_file(serv, token) != -1)
             copy_file(serv, token);
         else
-            write_response(serv->current->fd, "530 No sutch file.\r\n");
+            write_response(serv->current->fd, "550 No sutch file.\r\n");
     }
     else
         write_response(serv->current->fd, "530 Not logged in.\r\n");

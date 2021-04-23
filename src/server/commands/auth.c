@@ -44,7 +44,7 @@ void cmd_pass(server_t *serv)
     }
     else {
         write_response(serv->current->fd,
-        "430 Invalid username or password.\r\n");
+        "530 Invalid username or password.\r\n");
         serv->current->username = false;
     }
 }
@@ -55,5 +55,6 @@ void cmd_quit(server_t *serv)
     serv->current->logged = false;
     write_response(serv->current->fd,
     "221 Service closing control connection.\r\n");
+    close(serv->current->fd);
     serv->current->fd = 0;
 }

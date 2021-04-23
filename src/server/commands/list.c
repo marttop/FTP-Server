@@ -7,6 +7,19 @@
 
 #include "my_ftp.h"
 
+int file_exist(const char *file, server_t *serv)
+{
+    char tmp[PATH_MAX];
+    getcwd(tmp, sizeof(tmp));
+    chdir(serv->current->work);
+    if (open(file, O_RDONLY) != -1) {
+        chdir(tmp);
+        return (1);
+    }
+    chdir(tmp);
+    return (0);
+}
+
 int list_current_dir(server_t *serv, const char *arg)
 {
     FILE *fp;
@@ -33,10 +46,13 @@ void cmd_list(server_t *serv)
     if (serv->current->logged &&
     (serv->current->pasv || serv->current->port)) {
         char *token = strtok(NULL, " \r\n");
-        if (token == NULL)
+        if (token == NULL) {
             list_current_dir(serv, NULL);
-        else
+        }
+        else if (token != NULL && file_exist(token, serv)) {
             list_current_dir(serv, token);
+        }
+        else write_response(serv->current->fd, "550 No file.\r\n");
     }
     else write_response(serv->current->fd, "530 Not logged in.\r\n");
 }

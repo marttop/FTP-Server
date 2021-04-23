@@ -40,10 +40,12 @@ void cmd_pwd(server_t *serv)
 void cmd_cwd(server_t *serv)
 {
     char *token = strtok(NULL, " \r\n"), *safe = strtok(NULL, " \r\n");
-    if (serv->current->logged && token != NULL && safe == NULL) {
+    if (token == NULL) {
+        write_response(serv->current->fd, "501 Syntax error.\r\n");
+        return;
+    } if (serv->current->logged && token != NULL && safe == NULL) {
         char tmp[PATH_MAX];
-        getcwd(tmp, sizeof(tmp));
-        chdir(serv->current->work);
+        getcwd(tmp, sizeof(tmp)), chdir(serv->current->work);
         if (chdir(token) != -1) {
             memset(serv->current->work, '\0', sizeof(char) * PATH_MAX);
             getcwd(serv->current->work, sizeof(serv->current->work));
@@ -54,6 +56,8 @@ void cmd_cwd(server_t *serv)
             write_response(serv->current->fd, "550 No such directory.\r\n");
         chdir(tmp);
     }
+    else if (safe != NULL)
+        write_response(serv->current->fd, "501 Syntax error.\r\n");
     else write_response(serv->current->fd, "530 Not logged in.\r\n");
 }
 

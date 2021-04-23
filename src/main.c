@@ -24,7 +24,7 @@ void parse_main(int ac, char **av, server_t *serv)
     struct stat st = {0};
     serv->port = atoi(av[1]);
     if (stat(av[2], &st) == -1)
-        mkdir(av[2], 0700);
+        exit(84);
     char tmp[PATH_MAX];
     getcwd(tmp, sizeof(tmp));
     chdir(av[2]);
