@@ -27,7 +27,7 @@
 #include <limits.h>
 #include <poll.h>
 
-#define CMD_SIZE 9
+#define CMD_SIZE 10
 
 typedef struct server {
     int fdserv;
@@ -85,6 +85,7 @@ void cmd_pwd(server_t *serv);
 void cmd_cwd(server_t *serv);
 void cmd_cdup(server_t *serv);
 void cmd_pasv(server_t *serv);
+void cmd_list(server_t *serv);
 
 //Utils
 void push_back(int fd, server_t *serv);

@@ -42,8 +42,7 @@ void data_transfert(client_t *client)
         if (ready > 0) {
             size_rec = read(client->data, client->buf, 99 * sizeof(char));
             client->buf[size_rec] = '\0';
-            printf("Caracteres recus : %d\n", size_rec);
-            printf("Data : %s\n", client->buf);
+            printf("%s", client->buf);
         }
     }
 }

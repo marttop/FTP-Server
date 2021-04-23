@@ -10,12 +10,12 @@
 static const char *const cmd[CMD_SIZE] =
             {"USER", "PASS", "QUIT", "NOOP",
             "HELP", "PWD", "CWD", "CDUP",
-            "PASV"};
+            "PASV", "LIST"};
 
 void (*func_cmd[CMD_SIZE])(server_t *) =
             {cmd_user, cmd_pass, cmd_quit, cmd_noop,
             cmd_help, cmd_pwd, cmd_cwd, cmd_cdup,
-            cmd_pasv};
+            cmd_pasv, cmd_list};
 
 void parse_command(server_t *serv)
 {
