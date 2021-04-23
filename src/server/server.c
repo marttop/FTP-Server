@@ -51,12 +51,9 @@ void check_client_disconnection(server_t *serv)
                 printf("Host disconnected , ip %s , port %d \n",
                     inet_ntoa(serv->client.sin_addr),
                     ntohs(serv->client.sin_port));
-                close(tmp->fd);
-                tmp->fd = 0;
-            } else {
-                serv->current = tmp;
-                parse_command(serv);
-            }
+                close(tmp->fd), tmp->fd = 0;
+            } else
+                serv->current = tmp, parse_command(serv);
         }
         tmp = tmp->next;
     }

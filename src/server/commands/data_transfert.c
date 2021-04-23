@@ -38,9 +38,11 @@ void pasv_response(server_t *serv, int port)
 void cmd_pasv(server_t *serv)
 {
     if (serv->current->logged && !serv->current->pasv) {
-        int port = 0;
+        int port = 0, i = 1;
         memset(&serv->current->s, 0, sizeof(serv->current->s));
         serv->current->data_master = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+        setsockopt(serv->current->data_master,
+        SOL_SOCKET, SO_REUSEADDR, &i, sizeof(int));
         serv->current->s.sin_family = AF_INET;
         serv->current->s.sin_addr.s_addr = htonl(INADDR_ANY);
         if ((port = get_free_port(serv)) != -1) {
@@ -49,12 +51,10 @@ void cmd_pasv(server_t *serv)
             serv->current->client = accept(serv->current->data_master,
             (struct sockaddr *)&serv->current->s, &serv->size);
             serv->current->pasv = true;
-        }
-        else {
+        } else {
             write_response(serv->current->fd,
                 "434 Requested host unavailable.\r\n");
         }
-    }
-    else
+    } else
         write_response(serv->current->fd, "530 Not logged in.\r\n");
 }
