@@ -17,7 +17,7 @@ void write_data(server_t *serv, FILE *fp)
 int list_current_dir(server_t *serv, const char *arg)
 {
     FILE *fp;
-    char tmp[PATH_MAX], str[256];
+    char tmp[PATH_MAX], str[PATH_MAX];
     getcwd(tmp, sizeof(tmp));
     chdir(serv->current->work);
     if (arg != NULL) {
