@@ -18,6 +18,7 @@ SRCS	=	src/main.c \
 			src/server/commands/misc.c \
 			src/server/commands/list.c \
 			src/server/commands/delete.c \
+			src/server/commands/upload.c \
 			src/server/commands/download.c \
 			src/server/commands/data_transfert.c \
 

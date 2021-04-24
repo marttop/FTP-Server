@@ -66,8 +66,7 @@ void client_loop(client_t *client)
         if (ready > 0) {
             size_rec = read(1, client->buf, 99 * sizeof(char));
             client->buf[size_rec] = '\0';
-        }
-        write(client->fdclient, client->buf, strlen(client->buf));
+        } write(client->fdclient, client->buf, strlen(client->buf));
     }
 }
 
