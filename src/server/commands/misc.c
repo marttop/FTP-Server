@@ -41,7 +41,7 @@ void cmd_cwd(server_t *serv)
 {
     char *token = strtok(NULL, " \r\n"), *safe = strtok(NULL, " \r\n");
     if (token == NULL) {
-        write_response(serv->current->fd, "501 Syntax error.\r\n");
+        write_response(serv->current->fd, "550 Syntax error.\r\n");
         return;
     } if (serv->current->logged && token != NULL && safe == NULL) {
         char tmp[PATH_MAX];
@@ -57,15 +57,20 @@ void cmd_cwd(server_t *serv)
         chdir(tmp);
     }
     else if (safe != NULL)
-        write_response(serv->current->fd, "501 Syntax error.\r\n");
+        write_response(serv->current->fd, "550 Syntax error.\r\n");
     else write_response(serv->current->fd, "530 Not logged in.\r\n");
 }
 
 void cmd_cdup(server_t *serv)
 {
     if (serv->current->logged) {
+        char tmp[PATH_MAX];
+        getcwd(tmp, sizeof(tmp));
+        chdir(serv->current->work);
+        chdir("../");
         memset(serv->current->work, '\0', PATH_MAX * sizeof(char));
-        strcpy(serv->current->work, serv->work);
+        getcwd(serv->current->work, sizeof(serv->current->work));
+        chdir(tmp);
         write_response(serv->current->fd, "200 Command okay.\r\n");
     }
     else
