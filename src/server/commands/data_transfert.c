@@ -35,26 +35,36 @@ void pasv_response(server_t *serv, int port)
     write(serv->current->fd, buf, strlen(buf));
 }
 
+void link_connection(server_t *serv)
+{
+    int port = 0;
+    if ((port = get_free_port(serv)) != -1) {
+        listen(serv->current->data_master, 40);
+        pasv_response(serv, port);
+        serv->current->client = accept(serv->current->data_master,
+        (struct sockaddr *)&serv->current->s, &serv->size);
+        serv->current->pasv = true;
+    }
+    else {
+        write_response(serv->current->fd,
+        "421 Requested host unavailable.\r\n");
+    }
+}
+
 void cmd_pasv(server_t *serv)
 {
+    if (serv->current->logged && serv->current->pasv)
+        close_data_socket(serv);
     if (serv->current->logged && !serv->current->pasv) {
-        int port = 0, i = 1;
+        int i = 1;
         memset(&serv->current->s, 0, sizeof(serv->current->s));
         serv->current->data_master = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
         setsockopt(serv->current->data_master,
         SOL_SOCKET, SO_REUSEADDR, &i, sizeof(int));
         serv->current->s.sin_family = AF_INET;
         serv->current->s.sin_addr.s_addr = htonl(INADDR_ANY);
-        if ((port = get_free_port(serv)) != -1) {
-            listen(serv->current->data_master, 40);
-            pasv_response(serv, port);
-            serv->current->client = accept(serv->current->data_master,
-            (struct sockaddr *)&serv->current->s, &serv->size);
-            serv->current->pasv = true;
-        } else {
-            write_response(serv->current->fd,
-                "421 Requested host unavailable.\r\n");
-        }
-    } else
+        link_connection(serv);
+    }
+    else
         write_response(serv->current->fd, "530 Not logged in.\r\n");
 }
