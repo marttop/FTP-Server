@@ -53,7 +53,7 @@ void cmd_pasv(server_t *serv)
             serv->current->pasv = true;
         } else {
             write_response(serv->current->fd,
-                "434 Requested host unavailable.\r\n");
+                "421 Requested host unavailable.\r\n");
         }
     } else
         write_response(serv->current->fd, "530 Not logged in.\r\n");
