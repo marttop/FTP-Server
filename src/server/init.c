@@ -19,6 +19,8 @@ void init_server(server_t *serv)
     if (bind(serv->fdserv, (struct sockaddr *)(&serv->serv_addr),
     sizeof(serv->serv_addr)) == -1)
         handle_error("bind");
+    if (serv->port < 1024 || serv->port > USHRT_MAX)
+        handle_error("bind");
     if (listen(serv->fdserv, 40) == -1)
         handle_error("listen");
 }

@@ -10,14 +10,14 @@
 int get_free_port(server_t *serv)
 {
     int i = 1024;
-    for (; i < SHRT_MAX; i++) {
+    for (; i < USHRT_MAX; i++) {
         serv->current->s.sin_port = htons(i);
         if (bind(serv->current->data_master,
         (struct sockaddr *)(&serv->current->s),
         sizeof(serv->current->s)) != -1)
             break;
     }
-    if (i == SHRT_MAX)
+    if (i == USHRT_MAX)
         return (-1);
     return (i);
 }

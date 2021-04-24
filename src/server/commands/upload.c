@@ -10,10 +10,8 @@
 void write_content(server_t *serv, FILE *fp)
 {
     memset(serv->buf, '\0', 100);
-    char *line = NULL;
-    size_t size = 0;
-    while (getline(&line, &size, fp) != -1) {
-        fprintf(fp, "%s", line);
+    while (read(serv->current->child, serv->buf, 99) > 0) {
+        fprintf(fp, "%s", serv->buf);
     }
     fclose(fp);
 }
