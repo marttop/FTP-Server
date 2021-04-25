@@ -29,7 +29,7 @@
 #include <limits.h>
 #include <poll.h>
 
-#define CMD_SIZE 13
+#define CMD_SIZE 14
 
 typedef struct server {
     int fdserv;
@@ -65,6 +65,7 @@ typedef struct client {
     bool upload;
     int fdclient;
     int data;
+    int port_client;
     struct sockaddr_in client_addr;
     struct sockaddr_in d_t;
     struct pollfd set;
@@ -93,6 +94,7 @@ void cmd_list(server_t *serv);
 void cmd_dele(server_t *serv);
 void cmd_retr(server_t *serv);
 void cmd_stor(server_t *serv);
+void cmd_port(server_t *serv);
 
 //Utils
 void push_back(int fd, server_t *serv);
