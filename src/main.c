@@ -14,7 +14,7 @@ void display_usage(void)
     "\tport is the port number on witch the server socket listens\n", 60);
     write(1,
     "\tpath is the path to the home directory for the Anonymous user\n", 63);
-    exit(0);
+    exit(84);
 }
 
 void parse_main(int ac, char **av, server_t *serv)
