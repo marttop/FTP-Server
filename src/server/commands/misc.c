@@ -71,7 +71,7 @@ void cmd_cdup(server_t *serv)
         memset(serv->current->work, '\0', PATH_MAX * sizeof(char));
         getcwd(serv->current->work, sizeof(serv->current->work));
         chdir(tmp);
-        write_response(serv->current->fd, "200 Command okay.\r\n");
+        write_response(serv->current->fd, "250 Command okay.\r\n");
     }
     else
         write_response(serv->current->fd, "530 Not logged in.\r\n");
