@@ -29,7 +29,7 @@ void cmd_pwd(server_t *serv)
         char tmp[PATH_MAX];
         memset(tmp, '\0', PATH_MAX * sizeof(char));
         strcat(tmp, "257 ");
-        strcpy(tmp, serv->current->work);
+        strcat(tmp, serv->current->work);
         strcat(tmp, "\r\n");
         write_response(serv->current->fd, tmp);
     }
