@@ -15,7 +15,6 @@ void fill_infos(server_t *serv)
     serv->current->client = socket(AF_INET, SOCK_STREAM, 0);
     setsockopt(serv->current->data_master,
     SOL_SOCKET, SO_REUSEADDR, &id, sizeof(int));
-    serv->current->s.sin_family = AF_INET;
     serv->current->s.sin_addr.s_addr = htonl(INADDR_ANY);
 }
 
@@ -38,7 +37,7 @@ void link_ports(server_t *serv)
         }
         serv->current->port = true;
         write_response(serv->current->fd, "200 Command okay.\r\n");
-    } else write_response(serv->current->fd, "Service not available.\r\n");
+    } else write_response(serv->current->fd, "421 Service not available.\r\n");
 }
 
 void cmd_port(server_t *serv)
