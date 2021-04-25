@@ -29,7 +29,8 @@ void link_ports(server_t *serv)
         int b = atoi(strtok(NULL, " \r\n(),"));
         serv->current->s.sin_port = htons(a * 256 + b);
         fill_infos(serv);
-        if (connect(serv->current->client, (struct sockaddr *)&serv->current->s,
+        if (connect(serv->current->client,
+        (struct sockaddr *)&serv->current->s,
         sizeof(struct sockaddr_in)) == -1) {
             close_data_socket(serv);
             write_response(serv->current->fd, "421 Port taken.\r\n");
