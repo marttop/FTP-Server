@@ -47,6 +47,39 @@ void data_transfert(client_t *client)
     }
 }
 
+int check_buffer(client_t *client)
+{
+    char buf[255];
+    strcpy(buf, client->buf);
+    char *token = strtok(buf, " \r\n,.()");
+    if (token != NULL && strcmp(token, "PORT") == 0) {
+        int i = 1;
+        memset(&client->d_t, 0, sizeof(client->d_t));
+        client->port_client = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+        setsockopt(client->port_client,
+        SOL_SOCKET, SO_REUSEADDR, &i, sizeof(int));
+        client->d_t.sin_family = AF_INET;
+        client->d_t.sin_addr.s_addr = htonl(INADDR_ANY);
+        for (int i = 0; i < 4; i++)
+            strtok(NULL, " \r\n(),");
+        int a = atoi(strtok(NULL, " \r\n(),"));
+        int b = atoi(strtok(NULL, " \r\n(),"));
+        client->d_t.sin_port = htons(a * 256 + b);
+        if (bind(client->port_client,
+        (struct sockaddr *)(&client->d_t),
+        sizeof(client->d_t)) != -1) {
+            listen(client->port_client, 40);
+            write(client->fdclient, client->buf, strlen(client->buf));
+            client->data = accept(client->port_client,
+            (struct sockaddr *)&client->d_t, &client->size);
+            return (0);
+        } else {
+            handle_error("bind");
+        }
+    }
+    return (1);
+}
+
 void client_loop(client_t *client)
 {
     int ready, size_rec = 0;
@@ -66,7 +99,8 @@ void client_loop(client_t *client)
         if (ready > 0) {
             size_rec = read(1, client->buf, 99 * sizeof(char));
             client->buf[size_rec] = '\0';
-        } write(client->fdclient, client->buf, strlen(client->buf));
+        } if (check_buffer(client))
+            write(client->fdclient, client->buf, strlen(client->buf));
     }
 }
 
