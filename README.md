@@ -5,9 +5,9 @@
 
 ## Description
 The goal of this project is to create a FTP server.
-You MUST implement request sequences that are explained in the protocol (more information could be
+I implemented request sequences that are explained in the protocol (more information could be
 find in RFC959).
-The network communication will be achieved through the use of TCP sockets.
+The network communication is achieved through the use of TCP sockets.
 
 ## Server
 
